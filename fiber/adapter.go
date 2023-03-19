@@ -129,15 +129,15 @@ func (f *FiberLambda) adaptor(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var raddr net.Addr
 	remoteAddr, err := net.ResolveTCPAddr("tcp", r.RemoteAddr)
-	if err != nil {
-		http.Error(w, utils.StatusMessage(fiber.StatusInternalServerError), fiber.StatusInternalServerError)
-		return
+	if err == nil {
+		raddr = remoteAddr
 	}
 
 	// New fasthttp Ctx
 	var fctx fasthttp.RequestCtx
-	fctx.Init(req, remoteAddr, nil)
+	fctx.Init(req, raddr, nil)
 
 	// Pass RequestCtx to Fiber router
 	f.app.Handler()(&fctx)
